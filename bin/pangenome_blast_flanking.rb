@@ -23,13 +23,15 @@ path = gempath + '/lib/bio-pangenome.rb'
 require path
 #require 'bio-pangenome'
 require 'optparse'
+require 'tmpdir'
 
 options = { 
   :transcript_mapping => "sorted_filtered_mapping.csv.gz",
   :lines => "lines.txt",
   :genes => "genes.txt",
   :no_windows => 0, 
-  :window => 0
+  :window => 0,
+  :distance => 2000
 }
 opts = OptionParser.new do |o|
   o.banner = "Usage: #{File.basename($0)} [options]"
@@ -50,23 +52,63 @@ opts = OptionParser.new do |o|
     options[:window] = arg.to_i 
   end
 
+  o.on('-d', "--distance DIST", "Name of the distance set. Ues 'cds' to align cds. default 2000") do |arg|
+    options[:distance] = arg
+  end
+
+  o.on("-b", "--basepath PATH", "Folder with the sequences and mapping positions across genomes") do |arg|
+    options[:basepath] = arg
+  end
+
+  o.on("-o", "--output PATH", "Folder with the output. If  there are chunks, they will be used") do |arg|
+    options[:output] = arg
+  end
+
+  o.on("-l", "--lines PATH", "File containing the lines to be analysed") do |arg|
+    options[:lines] = arg
+  end
+
   o.separator ""
   o.on_tail('-h', '--help', 'display this help and exit') do
     options[:show_help] = true
   end
 end
 
-#begin
-  opts.parse!(ARGV)
+opts.parse!(ARGV)
 
-  genes = BioPangenome.load_genes(options[:genes], window: options[:window], no_windows: options[:no_windows] )
-  puts "Genes count: #{genes.size}"
-  
-  projected_genes = BioPangenome.load_projected_genes options[:transcript_mapping], genes: genes
-  puts projected_genes 
+genes = BioPangenome.load_genes(options[:genes], window: options[:window], no_windows: options[:no_windows] )
+puts "Genes count: #{genes.size}"
+
+lines = BioPangenome.load_lines(options[:lines])
+
+projected_genes = BioPangenome.load_projected_genes options[:transcript_mapping], genes: genes
+
+variety_coordinates = BioPangenome.load_mapping_hash(
+  varieties:lines, 
+  genes: projected_genes ,
+  prefix: options[:basepath],
+  distance: options[:distance]
+  )
+
+seqs = BioPangenome.load_sequences_from_hash(
+  coordinates:variety_coordinates,
+  prefix: options[:basepath],
+  distance: options[:distance],
+  projected_genes: projected_genes
+  )
+
+output = options[:output].to_s
+output = output + "_" + options[:window].to_s if options[:no_windows] > 0
+
+Dir.mktmpdir do |temp_dir|
+  puts "Aligning in  #{temp_dir}"
+  BioPangenome.align_gene_groups(
+    seqs: seqs, 
+    distance:options[:distance],
+    output: output,
+    tmp_folder: temp_dir)
+end
 
 
-#rescue OptionParser::InvalidOption => e
-#  options[:invalid_argument] = e.message
-#end
+
 

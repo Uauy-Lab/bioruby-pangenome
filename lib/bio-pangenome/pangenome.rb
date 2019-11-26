@@ -39,6 +39,7 @@ module BioPangenome
 		ret = Hash.new { |h, k| h[k] = Hash.new }
 		varieties.each do |v|
 			path = "#{prefix}#{distance}bp/#{v}_#{distance}bp_#{suffix}.reg.map"
+			$stderr.puts path
 			File.foreach(path) do |line|
 				line.chomp!
 				arr = line.split("\t")
@@ -179,19 +180,22 @@ module BioPangenome
 	end
 
 	def self.load_genes(filename, window: 0, no_windows: 0)
-
 		genes = File.readlines(filename).map do |t|
 			t.chomp!.split(".")[0]
 		end
-
 		if no_windows > 0
 			puts "'loading window #{window} of #{no_windows}'"
 			window_size = genes.size/no_windows
 			start = window * window_size
 			genes = genes[start, window_size]
 		end
-
 		genes
+	end
+
+	def self.load_lines(filename)
+		File.readlines(filename).map do |t|
+			t.chomp!.rstrip
+		end
 	end
 
 end
