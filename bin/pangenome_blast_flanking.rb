@@ -4,7 +4,7 @@
 # Author:: homonecloco
 # Copyright:: 2019
 
-USAGE = "Describe bio-pangenome"
+USAGE = "panggenome_blast_flanking.rb [options]"
 
 gempath = File.dirname(File.dirname(__FILE__))
 $: << File.join(gempath,'lib')
@@ -13,56 +13,42 @@ VERSION_FILENAME=File.join(gempath,'VERSION')
 version = File.new(VERSION_FILENAME).read.chomp
 
 # print banner
-print "bio-pangenome #{version} by homonecloco 2019\n"
+print "panggenome_blast_flanking #{version} by Ricardo H. Ramirez-Gonzalez 2019\n"
 
 if ARGV.size == 0
   print USAGE
 end
 
-require 'bio-pangenome'
+path = gempath + '/lib/bio-pangenome.rb'
+require path
+#require 'bio-pangenome'
 require 'optparse'
 
-# Uncomment when using the bio-logger 
-# require 'bio-logger'
-# Bio::Log::CLI.logger('stderr')
-# Bio::Log::CLI.trace('info')
-
-options = {:example_switch=>false,:show_help=>false}
+options = { 
+  :transcript_mapping => "sorted_filtered_mapping.csv.gz",
+  :lines => "lines.txt",
+  :genes => "genes.txt",
+  :no_windows => 0, 
+  :window => 0
+}
 opts = OptionParser.new do |o|
-  o.banner = "Usage: #{File.basename($0)} [options] reponame\ne.g. #{File.basename($0)} the-perfect-gem"
+  o.banner = "Usage: #{File.basename($0)} [options]"
 
-  o.on('--example_parameter [EXAMPLE_PARAMETER]', 'TODO: put a description for the PARAMETER') do |example_parameter|
-    # TODO: your logic here, below an example
-    options[:example_parameter] = 'this is a parameter'
-  end
-  
-  o.separator ""
-  o.on("--switch-example", 'TODO: put a description for the SWITCH') do
-    # TODO: your logic here, below an example
-    self[:example_switch] = true
+  o.on('-t', '--transcript_mapping [sorted_filtered_mapping.csv.gz]', 'File with the  mappings across  transcriptomes') do |arg|
+    options[:transcript_mapping] = arg
   end
 
-  # Uncomment the following when using the bio-logger 
-  # o.separator ""
-  # o.on("--logger filename",String,"Log to file (default stderr)") do | name |
-  #   Bio::Log::CLI.logger(name)
-  # end
-  #
-  # o.on("--trace options",String,"Set log level (default INFO, see bio-logger)") do | s |
-  #   Bio::Log::CLI.trace(s)
-  # end
-  # 
-  # o.on("-q", "--quiet", "Run quietly") do |q|
-  #   Bio::Log::CLI.trace('error')
-  # end
-  # 
-  # o.on("-v", "--verbose", "Run verbosely") do |v|
-  #   Bio::Log::CLI.trace('info')
-  # end
-  # 
-  # o.on("--debug", "Show debug messages") do |v|
-  #   Bio::Log::CLI.trace('debug')
-  # end
+  o.on('-g','--genes [genes.txt]', 'File with the list of genes') do |arg|
+    options[:genes] = arg
+  end
+
+  o.on('-n','--no_windows INT', "Number of chunks to divide the genes list. 0 to not split") do |arg|
+    options[:no_windows] = arg.to_i
+  end
+
+  o.on('-w', "--window INT", "Current window to run") do |arg|
+    options[:window] = arg.to_i 
+  end
 
   o.separator ""
   o.on_tail('-h', '--help', 'display this help and exit') do
@@ -70,14 +56,17 @@ opts = OptionParser.new do |o|
   end
 end
 
-begin
+#begin
   opts.parse!(ARGV)
 
-  # Uncomment the following when using the bio-logger 
-  # Bio::Log::CLI.configure('bio-pangenome')
+  genes = BioPangenome.load_genes(options[:genes], window: options[:window], no_windows: options[:no_windows] )
+  puts "Genes count: #{genes.size}"
+  
+  projected_genes = BioPangenome.load_projected_genes options[:transcript_mapping], genes: genes
+  puts projected_genes 
 
-  # TODO: your code here
-  # use options for your logic
-rescue OptionParser::InvalidOption => e
-  options[:invalid_argument] = e.message
-end
+
+#rescue OptionParser::InvalidOption => e
+#  options[:invalid_argument] = e.message
+#end
+
