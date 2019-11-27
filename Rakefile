@@ -15,12 +15,12 @@ require 'jeweler'
 Jeweler::Tasks.new do |gem|
   # gem is a Gem::Specification... see http://guides.rubygems.org/specification-reference/ for more options
   gem.name = "bio-pangenome"
-  gem.homepage = "http://github.com/homonecloco/bioruby-pangenome"
+  gem.homepage = "http://github.com/Uauy-Lab/bioruby-pangenome"
   gem.license = "MIT"
-  gem.summary = %Q{TODO: one-line summary of your gem}
-  gem.description = %Q{TODO: longer description of your gem}
+  gem.summary = %Q{Scripts to analyse pangenomes.}
+  gem.description = %Q{Tools to find similarity between pangenomes.}
   gem.email = "ricardo.ramirez-gonzalez@jic.ac.uk"
-  gem.authors = ["homonecloco"]
+  gem.authors = ["Ricardo H. Ramirez-Gonzalez"]
   # dependencies defined in Gemfile
 end
 Jeweler::RubygemsDotOrgTasks.new
