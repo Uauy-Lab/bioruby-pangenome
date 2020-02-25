@@ -9,4 +9,5 @@
 # In this file only require other files. Avoid other source code.
 
 require 'bio-pangenome/pangenome.rb'
-
+require 'bio-pangenome/gff3_extensions.rb'
+require	'bio-pangenome/MultipleGFF3.rb'
