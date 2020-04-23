@@ -31,64 +31,92 @@ require 'bio'
 require 'bio-svgenes'
 
 
-lines=["cadenza", "claire", "paragon", "robigus","weebil"]
-distances=[0,1000,2000,5000]
-gffs = MultipleGFFs.new(folder: "/Volumes/PanGenome/References/releaseV3/gff", lines:lines, suffix:".gff.gz", 
-    is_gz:true )
+options = {
+    lines:     "lines.txt",
+    distances: [0,1000,2000,5000],
+    path: "./gff/",
+    is_gz: true
+}
 
-distances.each do |d|
-    gffs.bedAround(distance: d, prefix: "/Volumes/PanGenome/GeneRegions/201910_v2_v3/", suffix: ".RefSeqv1.1.bed" )
-end
+opts = OptionParser.new do |o|
 
-lines2=["arinalrfor", "ashsyn", "chinese", "jagger", "julius", "lancer", "landmark", "mace", "norin61", "spelta", "stanley", "sy_mattis"]
-distances=[0,1000,2000,5000]
-gffs = MultipleGFFs.new(folder: "/Volumes/PanGenome/References/releasePGSBv2.0/gff", lines:lines2, suffix:".gff.gz", 
-    is_gz:true )
-
-distances.each do |d|
-    gffs.bedAround(distance: d, prefix: "/Volumes/PanGenome/GeneRegions/201910_v2_v3/", suffix: ".RefSeqv1.1.bed" )
-end
-
-def bedAroundToRegions(lines:[], distance: 1000, prefix: "../flanking/filtered/", suffix: ".RefSeqv1.1.reg" , suffix_in: ".RefSeqv1.1.bed" )
-    lines.each do |k|
-        path="#{prefix}#{k}_#{distance}bp_#{suffix_in}"
-        path2="#{prefix}#{k}_#{distance}bp_#{suffix}"
-        path3="#{prefix}#{k}_#{distance}bp_#{suffix}.map"
-        puts path
-        out=File.open(path2, "w")
-        out2=File.open(path3, "w")
-        File.foreach(path) do |line|
-           # puts line
-            arr = line.chomp!.split "\t"
-            first=arr[1]
-            last=arr[2]
-            name=arr[0]
-            #if(arr[5] == "-")
-            #    first=arr[2]
-            #    last=arr[1]
-            #end
-            
-            reg =  "#{name}:#{first}-#{last}"
-            out.puts reg
-            out2.puts [reg,arr[3]].join "\t"
-            #puts reg
-            #v.bedAroundGene(distance:distance, out:out)
-            #break
-        end
-        out.close
-        out2.close
+    o.on("-l", "--lines PATH", "File containing the lines to be analysed") do |arg|
+        options[:lines] = arg
     end
+
+    o.on("-d", "--distances 0,1000,2000", "File containing the distances to be analysed") do |arg|
+        options[:distances] = arg.split(",").map { |e|  e.to_i }
+    end
+
+    o.on("-p", "--gff_path DIR", "The directory where the gff files are") do |arg|
+        options[:path ] = arg
+    end
+
+    o.separator ""
+    o.on_tail('-h', '--help', 'display this help and exit') do
+        options[:show_help] = true
+    end
+
 end
 
+opts.parse!(ARGV)
 
+puts options.inspect
+
+lines = File.foreach(options[:lines]).map { |line| line.chomp }
+distances = options[:distances]
+puts lines
+
+
+
+gffs = MultipleGFFs.new(folder: options[:path], lines:lines, suffix:".gff.gz", 
+    is_gz:options[:is_gz] )
 
 distances.each do |d|
-    bedAroundToRegions(lines:lines+lines2,
-        distance: d,
-        prefix: "/Volumes/PanGenome/GeneRegions/201910_v2_v3/",
-        suffix_in: ".RefSeqv1.1.bed", 
-        suffix: ".RefSeqv1.1.reg")
+    gffs.bedAround(distance: d, prefix: options[:path], suffix: ".bed" )
 end
+
+
+ def bedAroundToRegions(lines:[], distance: 1000, prefix: "../flanking/filtered/", suffix: ".RefSeqv1.1.reg" , suffix_in: ".RefSeqv1.1.bed" )
+     lines.each do |k|
+         path="#{prefix}#{k}_#{distance}bp_#{suffix_in}"
+         path2="#{prefix}#{k}_#{distance}bp_#{suffix}"
+         path3="#{prefix}#{k}_#{distance}bp_#{suffix}.map"
+         puts path
+         out=File.open(path2, "w")
+         out2=File.open(path3, "w")
+         File.foreach(path) do |line|
+            # puts line
+             arr = line.chomp!.split "\t"
+             first=arr[1]
+             last=arr[2]
+             name=arr[0]
+             #if(arr[5] == "-")
+             #    first=arr[2]
+             #    last=arr[1]
+             #end
+           
+             reg =  "#{name}:#{first}-#{last}"
+             out.puts reg
+             out2.puts [reg,arr[3]].join "\t"
+             #puts reg
+             #v.bedAroundGene(distance:distance, out:out)
+             #break
+         end
+         out.close
+         out2.close
+     end
+ end
+
+
+
+ distances.each do |d|
+     bedAroundToRegions(lines:lines,
+         distance: d,
+         prefix: options[:path],
+         suffix_in: ".bed", 
+         suffix: ".reg")
+ end
 
 
 

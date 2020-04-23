@@ -88,7 +88,7 @@ class GFF3
 	end
 
 	def bedAroundGene(distance:1000, out:$stdout)
-		each_mrna do |record|
+		each_gene do |record|
 			start = record.start-distance
 			start = 1 if start < 1
 			reg_end=record.end + distance

@@ -16,6 +16,16 @@ class MultipleGFFs
         @lines_gffs.each_pair{|k,v| yield k, v }
     end
 
+    def bedAround(distance: 1000, prefix: "../flanking/releasePGSBV1/", suffix: ".RefSeqv1.1.bed" )
+        each_gff do |k, v|
+            path="#{prefix}#{k}_#{distance}bp_#{suffix}"
+            puts path
+            out=File.open(path, "w")
+            v.bedAroundGene(distance:distance, out:out)
+            out.close
+        end
+    end
+
     def summary
         ret = []
         each_gff do |k,v|
@@ -62,17 +72,6 @@ class MultipleGFFs
             id: f_id)
                 generic_track.add(feature) 
             end 
-        end
-
-
-        def bedAround(distance: 1000, prefix: "../flanking/releasePGSBV1/", suffix: ".RefSeqv1.1.bed" )
-            each_gff do |k, v|
-                path="#{prefix}#{k}_#{distance}bp_#{suffix}"
-                puts path
-                out=File.open(path, "w")
-                v.bedAroundGene(distance:distance, out:out)
-                out.close
-            end
         end
     end
 end
