@@ -108,7 +108,7 @@ if options[:distance].integer?
     )
 else 
   seqs = BioPangenome.load_cds_sequences( varieties: lines,
-    prefix: options[:basepath],
+    prefix: "#{options[:basepath]}/#{options[:distance]}/",
     suffix: ".#{options[:distance]}.fa.gz",
     set_id: options[:distance], 
     genes:projected_genes )
