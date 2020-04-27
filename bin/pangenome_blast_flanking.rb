@@ -4,6 +4,13 @@
 # Author:: Rciardo H. Ramirez Gonzalez
 # Copyright:: 2019, 2020
 
+class String
+    def integer?
+        Integer(self) != nil rescue false
+    end
+end
+
+
 USAGE = "panggenome_blast_flanking.rb [options]"
 
 gempath = File.dirname(File.dirname(__FILE__))
@@ -85,19 +92,31 @@ lines = BioPangenome.load_lines(options[:lines])
 
 projected_genes = BioPangenome.load_projected_genes options[:transcript_mapping], genes: genes
 
-variety_coordinates = BioPangenome.load_mapping_hash(
-  varieties:lines, 
-  genes: projected_genes ,
-  prefix: options[:basepath],
-  distance: options[:distance]
-  )
 
-seqs = BioPangenome.load_sequences_from_hash(
-  coordinates:variety_coordinates,
-  prefix: options[:basepath],
-  distance: options[:distance],
-  projected_genes: projected_genes
-  )
+seqs = nil 
+
+if options[:distance].integer?
+  variety_coordinates = BioPangenome.load_mapping_hash(
+    varieties:lines, 
+    genes: projected_genes ,
+    prefix: options[:basepath],
+    distance: options[:distance]
+    )
+  seqs = BioPangenome.load_sequences_from_hash(
+    coordinates:variety_coordinates,
+    prefix: options[:basepath],
+    distance: options[:distance],
+    projected_genes: projected_genes
+    )
+else 
+  seqs = BioPangenome.load_cds_sequences( varieties: lines,
+    prefix: "#{options[:basepath]}/#{options[:distance]}/",
+    suffix: ".#{options[:distance]}.fa.gz",
+    set_id: options[:distance], 
+    genes:projected_genes )
+end
+
+puts "Loaded squence set for #{seqs.size} genes"
 
 output = options[:output].to_s
 output = output + "_" + options[:window].to_s if options[:no_windows] > 0

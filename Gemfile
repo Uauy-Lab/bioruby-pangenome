@@ -4,6 +4,8 @@ source "https://rubygems.org"
 #   gem "activesupport", ">= 2.3.5"
 gem "bio"
 gem "bio-blastxmlparser"
+gem "bio-gff3"
+
 # Add dependencies to develop your gem here.
 # Include everything needed to run rake, tests, features, etc.
 group :development do
