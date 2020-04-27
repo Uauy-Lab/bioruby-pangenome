@@ -1,8 +1,8 @@
 #!/usr/bin/env ruby
 #
 # BioRuby bio-pangenome Plugin BioPangenome
-# Author:: homonecloco
-# Copyright:: 2019
+# Author:: Rciardo H. Ramirez Gonzalez
+# Copyright:: 2019, 2020
 
 USAGE = "panggenome_blast_flanking.rb [options]"
 
@@ -71,6 +71,8 @@ opts = OptionParser.new do |o|
   o.separator ""
   o.on_tail('-h', '--help', 'display this help and exit') do
     options[:show_help] = true
+    puts o
+    exit
   end
 end
 

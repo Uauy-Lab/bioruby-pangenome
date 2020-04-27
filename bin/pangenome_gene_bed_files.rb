@@ -1,8 +1,8 @@
 #!/usr/bin/env ruby
 #
 # BioRuby bio-pangenome Plugin BioPangenome
-# Author:: homonecloco
-# Copyright:: 2019
+# Author:: Ricardo H Ramirez Gonzalez
+# Copyright:: 2019,2020
 
 USAGE = "pangenome_gene_bed_files.rb [options]"
 
@@ -17,6 +17,7 @@ print "pangenome_gene_bed_files #{version} by Ricardo H. Ramirez-Gonzalez 2020\n
 
 if ARGV.size == 0
   print USAGE
+  exit
 end
 
 path = gempath + '/lib/bio-pangenome.rb'
