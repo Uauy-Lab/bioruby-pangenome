@@ -1,7 +1,16 @@
-require 'helper'
-
+#require 'helper'
+require "test/unit"
 class TestBioPangenome < Test::Unit::TestCase
-  should "probably rename this file and start testing for real" do
-    flunk "hey buddy, you should probably rename this file and start testing for real"
+  def setup
+    #@num = SimpleNumber.new(2)
   end
+
+  def teardown
+    ## Nothing really
+  end
+
+  def test_simple
+    assert_equal(4, 4)
+  end
+
 end

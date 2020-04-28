@@ -28,7 +28,6 @@ how to contribute, see
 
   http://github.com/homonecloco/bioruby-pangenome
 
-The BioRuby community is on IRC server: irc.freenode.org, channel: #bioruby.
 
 ## Cite
 
