@@ -81,13 +81,12 @@ class TestBioPangenomeGeneGroup < Test::Unit::TestCase
 	end
 
 	def test_aligned_sequences		
-		#@sequences.each_pair do |name, val|  
-		#	File.open("./test/data/out/aligned_#{name}.fa", "w") do |out|
-		#		seqs = val.aligned_sequences
-		#		out.write seqs.to_fasta
-		#	end
-		#end
-		
+		@sequences.complete.each_pair do |name, val|  
+			File.open("./test/data/out/aligned_#{name}.fa", "w") do |out|
+				seqs = val.aligned_sequences
+				out.write seqs.to_fasta
+			end
+		end
 	end
 
 	def test_complete_alignments
