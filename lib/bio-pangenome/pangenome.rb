@@ -5,6 +5,7 @@ require 'csv'
 require 'set'
 require 'bio-blastxmlparser'
 
+
 module BioPangenome
 	Transcript = Struct.new(:id, :gene, :chromosome,:version,:count,:transcript,:confidence, :count_int, :isoform)
 	GeneFlankingRegion = Struct.new(:transcript, :gene, :ann, :region, :id, :flank_length, :sequence, :line)
@@ -75,6 +76,7 @@ module BioPangenome
 	end
 
 
+
 	def self.load_sequences_from_hash(coordinates:{},  prefix: "../flanking/filtered/",  suffix: "RefSeqv1.1", distance: 1000, projected_genes: {})
 		ret = Hash.new { |h, k| h[k] = Hash.new }
 		coordinates.each_pair do |variety, coords|
@@ -140,31 +142,12 @@ module BioPangenome
 		out.close
 	end
 
-	def self.load_cds_sequences( varieties:[], genes:{}, prefix: "../flanking/filtered/",  suffix: ".cds.fa.gz", set_id: "cds" )
-		ret = Hash.new { |h, k| h[k] = Hash.new }
-		varieties.each do |variety|
-			path = "#{prefix}/#{variety}#{suffix}"
-			infile = open(path)
-			io = Zlib::GzipReader.new(infile) 
-			Bio::FlatFile.open(Bio::FastaFormat, io) do |fasta_file|
-				fasta_file.each do |entry|
-					arr = entry.definition.split(".")
-					next unless genes[arr[0]]
-					row = genes[arr[0]]
-					seq_name = GeneFlankingRegion.new(entry.definition,
-						row["gene"], "",
-						"", entry.definition, set_id, nil, variety )
-					seq = entry.seq
-					seq.gsub!(/N*$/, '')
-					seq.gsub!(/^N*/, '')
-					seq_name.sequence = seq
-					base_gene = seq_name.gene
-					ret[base_gene][variety] = seq_name unless ret[base_gene][variety]
-				end
-			end
-			io.close
-		end
-		ret
+	def self.load_cds_sequencess( varieties:[], genes:{}, prefix: "../flanking/filtered/",  suffix: ".cds.fa.gz", set_id: "cds" )
+		return load_sequences(varieties: varieties, genes: genes, prefix: prefix, suffix: suffix, set_id: set_id)
+	end
+
+	def self.load_sequences( varieties:[], genes:{}, prefix: "../flanking/filtered/",  suffix: ".cds.fa.gz", set_id: "cds" )
+		return GeneGroup.load_sequences(varieties: varieties, genes: genes, prefix: prefix, suffix: suffix, set_id: set_id)
 	end
 
 	def self.load_projected_genes(transcript_mapping, genes:[])
@@ -181,6 +164,7 @@ module BioPangenome
 
 	def self.load_genes(filename, window: 0, no_windows: 0)
 		genes = File.readlines(filename).map do |t|
+			next if t.nil?
 			t.chomp!.split(".")[0]
 		end
 		if no_windows > 0
