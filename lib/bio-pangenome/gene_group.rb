@@ -1,11 +1,13 @@
 module BioPangenome
 	class GeneGroup < Hash
 		attr_accessor :gene 
+		attr :sequences
+		attr_accessor :expected_varieties
 
 		def aligned_sequences
 			return @aligned_sequences if @aligned_sequences
 			return Hash.new if self.length == 0
-			options = ['--maxiterate', '1000', '--localpair', '--quiet']
+			options = [ '--quiet', "--thread" , "8"]
 			mafft = Bio::MAFFT.new( "mafft" , options)
 			report = mafft.query_align(sequences)
 			@aligned_sequences = report.alignment
@@ -28,8 +30,21 @@ module BioPangenome
     	end
 	end 
 
+	class GeneGroupSet < Hash 
+		attr_accessor :varieties
+
+		def complete
+			ret = GeneGroupSet.new { |h, k| h[k] = GeneGroup.new }
+			self.each_pair do |k,v|
+				ret[k] = v if v.keys.length == varieties.length
+			end 
+			return ret
+		end
+	end
+
 	def self.load_sequences( varieties:[], genes:{}, prefix: "../flanking/filtered/",  suffix: ".cds.fa.gz", set_id: "cds" )
-		ret = Hash.new { |h, k| h[k] = GeneGroup.new }
+		ret = GeneGroupSet.new { |h, k| h[k] = GeneGroup.new }
+		ret.varieties = varieties
 		varieties.each do |variety|
 			path = "#{prefix}/#{variety}#{suffix}"
 			infile = open(path)
@@ -55,11 +70,14 @@ module BioPangenome
 					base_gene = row["gene"]
 					ret[base_gene][variety] = seq_name unless ret[base_gene][variety]
 					ret[base_gene].gene = base_gene
-				end
+					ret[base_gene].expected_varieties = varieties
+ 				end
 			end
 			io.close
 		end
 		ret
 	end
+
+
 
 end
