@@ -5,8 +5,11 @@ require 'csv'
 require 'set'
 require 'bio-blastxmlparser'
 
+module Bio
 
-module BioPangenome
+
+
+module Pangenome
 	Transcript = Struct.new(:id, :gene, :chromosome,:version,:count,:transcript,:confidence, :count_int, :isoform)
 	GeneFlankingRegion = Struct.new(:transcript, :gene, :ann, :region, :id, :flank_length, :sequence, :line)
 
@@ -181,5 +184,5 @@ module BioPangenome
 			t.chomp!.rstrip
 		end
 	end
-
+end
 end

@@ -5,11 +5,11 @@ path = gempath + '/lib/bio-pangenome.rb'
 require path
 
  
-class TestBioPangenome < Test::Unit::TestCase
+class Test::Pangenome < Test::Unit::TestCase
 	def setup
-		@genes = BioPangenome.load_genes("./test/data/genes.txt")
-		@lines = BioPangenome.load_lines("./test/data/lines.txt")
-		@projected_genes = BioPangenome.load_projected_genes("./test/data/mapping.csv.gz", genes: @genes)
+		@genes = Bio::Pangenome.load_genes("./test/data/genes.txt")
+		@lines = Bio::Pangenome.load_lines("./test/data/lines.txt")
+		@projected_genes = Bio::Pangenome.load_projected_genes("./test/data/mapping.csv.gz", genes: @genes)
 	end
 
 	def teardown
@@ -17,21 +17,21 @@ class TestBioPangenome < Test::Unit::TestCase
 	end
 
 	def test_load_genes
-		genes = BioPangenome.load_genes("./test/data/genes.txt")
+		genes = Bio::Pangenome.load_genes("./test/data/genes.txt")
 		assert_equal(50, genes.size)
-		genes = BioPangenome.load_genes("./test/data/genes.txt", window:0, no_windows: 2)
+		genes = Bio::Pangenome.load_genes("./test/data/genes.txt", window:0, no_windows: 2)
 		assert_equal(25, genes.size)
-		genes = BioPangenome.load_genes("./test/data/genes.txt", window:1, no_windows: 2)
+		genes = Bio::Pangenome.load_genes("./test/data/genes.txt", window:1, no_windows: 2)
 		assert_equal(25, genes.size)
 	 end
 
 	def test_load_lines
-		lines = BioPangenome.load_lines("./test/data/lines.txt")
+		lines = Bio::Pangenome.load_lines("./test/data/lines.txt")
 		assert(15, lines.inspect)
 	end
 
 	def test_load_sequences
-		sequences = BioPangenome.load_sequences(varieties: @lines, genes: @projected_genes, prefix: "./test/data/2000bp", suffix: "_2000bp_RefSeqv1.1.fa.gz", set_id: "2000bp")
+		sequences = Bio::Pangenome.load_sequences(varieties: @lines, genes: @projected_genes, prefix: "./test/data/2000bp", suffix: "_2000bp_RefSeqv1.1.fa.gz", set_id: "2000bp")
 
 		assert_equal( 12, sequences["TraesCS6A02G002800"].length )
 		assert_equal( 14, sequences["TraesCS6A02G006600"].length )

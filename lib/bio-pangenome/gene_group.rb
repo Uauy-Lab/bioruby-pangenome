@@ -1,4 +1,5 @@
-module BioPangenome
+module Bio
+	module Pangenome
 	class GeneGroup < Hash
 		attr_accessor :gene 
 		attr :sequences
@@ -78,6 +79,6 @@ module BioPangenome
 		ret
 	end
 
-
+	end
 
 end
