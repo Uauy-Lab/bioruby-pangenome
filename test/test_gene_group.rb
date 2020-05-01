@@ -41,7 +41,7 @@ class Test::PangenomeGeneGroup < Test::Unit::TestCase
 		assert_equal(1, @sequences['TraesCS6A02G163100'].lengths.uniq.length)
 		assert_equal(4, @sequences['TraesCS6A02G177100'].lengths.uniq.length)
 		assert_equal(3, @sequences['TraesCS6A02G177700'].lengths.uniq.length)
-		assert_equal(15, @sequences['TraesCS6A02G183800'].lengths.uniq.length)
+		assert_equal(14, @sequences['TraesCS6A02G183800'].lengths.uniq.length)
 		assert_equal(2, @sequences['TraesCS6A02G197000'].lengths.uniq.length)
 		assert_equal(2, @sequences['TraesCS6A02G212100'].lengths.uniq.length)
 		assert_equal(1, @sequences['TraesCS6A02G224000'].lengths.uniq.length)
@@ -56,13 +56,13 @@ class Test::PangenomeGeneGroup < Test::Unit::TestCase
 		assert_equal(2, @sequences['TraesCS6A02G295200'].lengths.uniq.length)
 		assert_equal(4, @sequences['TraesCS6A02G307900'].lengths.uniq.length)
 		assert_equal(1, @sequences['TraesCS6A02G310500'].lengths.uniq.length)
-		assert_equal(7, @sequences['TraesCS6A02G312900'].lengths.uniq.length)
-		assert_equal(14, @sequences['TraesCS6A02G329200'].lengths.uniq.length)
+		assert_equal(6, @sequences['TraesCS6A02G312900'].lengths.uniq.length)
+		assert_equal(13, @sequences['TraesCS6A02G329200'].lengths.uniq.length)
 		assert_equal(2, @sequences['TraesCS6A02G329600'].lengths.uniq.length)
 		assert_equal(1, @sequences['TraesCS6A02G339000'].lengths.uniq.length)
 		assert_equal(3, @sequences['TraesCS6A02G389900'].lengths.uniq.length)
 		assert_equal(4, @sequences['TraesCS6A02G399100'].lengths.uniq.length)
-		assert_equal(6, @sequences['TraesCS6A02G403300'].lengths.uniq.length)
+		assert_equal(5, @sequences['TraesCS6A02G403300'].lengths.uniq.length)
 		assert_equal(2, @sequences['TraesCS6A02G012900'].lengths.uniq.length)
 		assert_equal(8, @sequences['TraesCS6A02G087800'].lengths.uniq.length)
 		assert_equal(7, @sequences['TraesCS6A02G020700'].lengths.uniq.length)
@@ -74,7 +74,7 @@ class Test::PangenomeGeneGroup < Test::Unit::TestCase
 		@sequences.each_pair do |name, val|  
 			File.open("./test/data/out/#{name}.fa", "w") do |out|
 				seqs = val.sequences
-				out.write seqs.to_fasta
+				out.write seqs.output_fasta
 			end
 		end
 
@@ -84,14 +84,14 @@ class Test::PangenomeGeneGroup < Test::Unit::TestCase
 		@sequences.complete.each_pair do |name, val|  
 			File.open("./test/data/out/aligned_#{name}.fa", "w") do |out|
 				seqs = val.aligned_sequences
-				out.write seqs.to_fasta
+				out.write seqs.output_fasta
 			end
 		end
 	end
 
 	def test_complete_alignments
 		complete_genes = @sequences.complete
-		assert_equal(16, complete_genes.length)
+		assert_equal(18, complete_genes.length)
 		assert(complete_genes.keys.include? "TraesCS6A02G027000") 
 		assert(complete_genes.keys.include? "TraesCS6A02G134500") 
 		assert(complete_genes.keys.include? "TraesCS6A02G137400") 

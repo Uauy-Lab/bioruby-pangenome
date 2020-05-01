@@ -10,7 +10,6 @@ mace
 norin61
 paragon
 robigus
-spelta
 stanley
 sy_mattis
 weebil
