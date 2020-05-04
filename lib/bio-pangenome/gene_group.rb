@@ -37,7 +37,7 @@ module Bio
     		@mask ||= Bio::Pangenome::HaplotypeMask.new(aligned_sequences)
     	end
 
-
+    	
 
 	end 
 
@@ -46,11 +46,14 @@ module Bio
 
 		def complete
 			ret = GeneGroupSet.new { |h, k| h[k] = GeneGroup.new }
+			ret.varieties = varieties
 			self.each_pair do |k,v|
 				ret[k] = v if v.keys.length == varieties.length
 			end 
 			return ret
 		end
+
+		
 	end
 
 	def self.load_sequences( varieties:[], genes:{}, prefix: "../flanking/filtered/",  suffix: ".cds.fa.gz", set_id: "cds" )
