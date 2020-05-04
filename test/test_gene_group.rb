@@ -80,13 +80,20 @@ class Test::PangenomeGeneGroup < Test::Unit::TestCase
 
 	end
 
-	def test_aligned_sequences		
-		@sequences.complete.each_pair do |name, val|  
-			File.open("./test/data/out/aligned_#{name}.fa", "w") do |out|
-				seqs = val.aligned_sequences
-				out.write seqs.output_fasta
+	def test_aligned_sequences	
+		stats_out = File.open("./test/data/out/aligned_stats.csv", "w")	
+		stats_keys = [:gaps, :mismatchs, :matches, :length]
+		stats_out.puts "gene," + stats_keys.map{|k| k.to_s}.join(",")
+		@sequences.complete.each_pair do |name, val|
+			seqs = val.aligned_sequences
+			mask = val.mask
+			File.open("./test/data/out/aligned_#{name}.fa", "w") do |out|	
+				out.write mask.output_fasta
 			end
+
+			stats_out.puts  name + "," + stats_keys.map{|k| mask.stats[k]}.join(",")
 		end
+		stats_out.close
 	end
 
 	def test_complete_alignments

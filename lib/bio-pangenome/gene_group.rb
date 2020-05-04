@@ -5,6 +5,8 @@ module Bio
 		attr :sequences
 		attr_accessor :expected_varieties
 
+
+
 		def aligned_sequences
 			return @aligned_sequences if @aligned_sequences
 			return Hash.new if self.length == 0
@@ -12,6 +14,7 @@ module Bio
 			mafft = Bio::MAFFT.new( "mafft" , options)
 			report = mafft.query_align(sequences)
 			@aligned_sequences = report.alignment
+			#@aligned_sequences.include AlignmentExtension
 			@aligned_sequences
     	end
 
@@ -29,6 +32,13 @@ module Bio
 		  	end
 			@sequences
     	end
+
+    	def mask 
+    		@mask ||= Bio::Pangenome::HaplotypeMask.new(aligned_sequences)
+    	end
+
+
+
 	end 
 
 	class GeneGroupSet < Hash 
