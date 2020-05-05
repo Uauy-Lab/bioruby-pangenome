@@ -1,5 +1,4 @@
-module Bio
-	module Pangenome
+module Bio::Pangenome
 	class GeneGroup < Hash
 		attr_accessor :gene 
 		attr :sequences
@@ -37,7 +36,7 @@ module Bio
     		@mask ||= Bio::Pangenome::HaplotypeMask.new(aligned_sequences)
     	end
 
-    	
+
 
 	end 
 
@@ -53,7 +52,7 @@ module Bio
 			return ret
 		end
 
-		
+
 	end
 
 	def self.load_sequences( varieties:[], genes:{}, prefix: "../flanking/filtered/",  suffix: ".cds.fa.gz", set_id: "cds" )
@@ -61,37 +60,24 @@ module Bio
 		ret.varieties = varieties
 		varieties.each do |variety|
 			path = "#{prefix}/#{variety}#{suffix}"
-			infile = open(path)
-			io = Zlib::GzipReader.new(infile) 
-			Bio::FlatFile.open(Bio::FastaFormat, io) do |fasta_file|
-				fasta_file.each do |entry|
-					definition, region = entry.definition.split("::")
-					seq_name = parseSequenceName(region, definition) if region
-					
-					seq_name = GeneFlankingRegion.new(entry.definition,
-						nil, "",
-						"", entry.definition, set_id, nil, variety ) unless region
-					arr = definition.split(".")
-					next unless genes.include? seq_name.gene
-					row = genes[seq_name.gene]
-					row = genes[arr[0]] unless region
-					seq_name.gene = row["gene"]
-					
-					seq = entry.seq
-					seq.gsub!(/N*$/, '')
-					seq.gsub!(/^N*/, '')
-					seq_name.sequence = seq
-					base_gene = row["gene"]
-					ret[base_gene][variety] = seq_name unless ret[base_gene][variety]
-					ret[base_gene].gene = base_gene
-					ret[base_gene].expected_varieties = varieties
- 				end
+			Bio::Extensions.fasta_gz_iterator(path) do |entry|
+				definition, region = entry.definition.split("::")
+				seq_name = parseSequenceName(region, definition) if region
+				seq_name = GeneFlankingRegion.new(entry.definition, nil, "",
+					"", entry.definition, set_id, nil, variety ) unless region
+				arr = definition.split(".")
+				next unless genes.include? seq_name.gene
+				row = genes[seq_name.gene]
+				row = genes[arr[0]] unless region
+				seq_name.gene = row["gene"]
+				seq = entry.seq
+				seq_name.sequence = seq
+				base_gene = row["gene"]
+				ret[base_gene][variety] = seq_name unless ret[base_gene][variety]
+				ret[base_gene].gene = base_gene
+				ret[base_gene].expected_varieties = varieties
 			end
-			io.close
 		end
 		ret
 	end
-
-	end
-
 end
