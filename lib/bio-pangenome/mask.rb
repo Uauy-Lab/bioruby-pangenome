@@ -68,11 +68,11 @@ class Bio::Pangenome::HaplotypeMask
     return @valid_snps if @valid_snps
     @valid_snps = []
     snp_positions.each do |pos|
-      next if pos < flanking_bases
       start = pos - flanking_bases
-      tmp_mask = mask[start , flanking_bases*2 + 1]
+      size =  flanking_bases * 2 + 1
+      tmp_mask = mask[start ,size]
       dots = tmp_mask.count(match_line_char)
-      @valid_snps << pos if dots == flanking_bases * 2
+      @valid_snps << pos  if dots == size - 1
     end
     @valid_snps
   end
