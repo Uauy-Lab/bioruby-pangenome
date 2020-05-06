@@ -23,18 +23,21 @@ class Bio::Pangenome::HaplotypeMask
     @flanking_bases = flanking_bases.freeze
   end
 
+  def site_mask(site)
+    a = site.collect { |c| c.upcase }.sort.uniq
+    chr = mismatch_char
+    chr = gap_char if site.has_gap?
+    chr = match_line_char if a.size == 1 
+    chr = missing_char if a.include? "N"
+    chr
+  end
 
   def mask
     return @mask if @mask
     str = "." * alignment.alignment_length
     i = 0
     alignment.each_site  do |s|
-      a = s.collect { |c| c.upcase }.sort.uniq
-      chr = mismatch_char
-      chr = gap_char if s.has_gap?
-      chr = match_line_char if a.size == 1 
-      chr = missing_char if a.include? "N"
-      str[i] = chr
+      str[i] = site_mask(s)
       i += 1
     end 
     @mask = str.freeze

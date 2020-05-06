@@ -35,9 +35,6 @@ module Bio::Pangenome
     	def mask 
     		@mask ||= Bio::Pangenome::HaplotypeMask.new(aligned_sequences)
     	end
-
-
-
 	end 
 
 	class GeneGroupSet < Hash 
