@@ -56,7 +56,7 @@ class GFF3
 	end
 
 	def each_cds
-		return enum_for(:each_mrna) unless block_given? 
+		return enum_for(:each_cds) unless block_given? 
 		self.each do |record|
 			next unless record.feature == "CDS"
 			yield record

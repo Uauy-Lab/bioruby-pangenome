@@ -11,9 +11,6 @@ class Test::PangenomeGeneGroup < Test::Unit::TestCase
 		@projected_genes = Bio::Pangenome.load_projected_genes("./test/data/mapping.csv.gz", genes: @genes)
 		@sequences = Bio::Pangenome.load_sequences(varieties: @lines, genes: @projected_genes, prefix: "./test/data/2000bp", suffix: "_2000bp_RefSeqv1.1.fa.gz", set_id: "2000bp")
 
-		@gene_1 =  @sequences["TraesCS6A02G329200"]
-		@gene_2 =  @sequences["TraesCS6A02G310500"]
-
 	end
 
 	def teardown
@@ -125,28 +122,30 @@ class Test::PangenomeGeneGroup < Test::Unit::TestCase
 		end
 	end
 
-	def test_complete_alignments
-		complete_genes = @sequences.complete
-		assert_equal(18, complete_genes.length)
-		assert(complete_genes.keys.include? "TraesCS6A02G027000") 
-		assert(complete_genes.keys.include? "TraesCS6A02G134500") 
-		assert(complete_genes.keys.include? "TraesCS6A02G137400") 
-		assert(complete_genes.keys.include? "TraesCS6A02G143300") 
-		assert(complete_genes.keys.include? "TraesCS6A02G177700") 
-		assert(complete_genes.keys.include? "TraesCS6A02G212100") 
-		assert(complete_genes.keys.include? "TraesCS6A02G224000") 
-		assert(complete_genes.keys.include? "TraesCS6A02G235700") 
-		assert(complete_genes.keys.include? "TraesCS6A02G239100") 
-		assert(complete_genes.keys.include? "TraesCS6A02G256700") 
-		assert(complete_genes.keys.include? "TraesCS6A02G261200") 
-		assert(complete_genes.keys.include? "TraesCS6A02G295200") 
-		assert(complete_genes.keys.include? "TraesCS6A02G307900") 
-		assert(complete_genes.keys.include? "TraesCS6A02G329600") 
-		assert(complete_genes.keys.include? "TraesCS6A02G389900") 
-		assert(complete_genes.keys.include? "TraesCS6A02G399100")
+	def test_snps_hap
+		gene = @sequences["TraesCS6A02G077500"]
+		assert_equal('tggg',gene.snps_hap['arinalrfor'])
+		assert_equal('ggtg',gene.snps_hap['cadenza'])
+		assert_equal('ggtg',gene.snps_hap['chinese'])
+		assert_equal('tgga',gene.snps_hap['claire'])
+		assert_equal('tgga',gene.snps_hap['jagger'])
+		assert_equal('tgga',gene.snps_hap['julius'])
+		assert_equal('tgga',gene.snps_hap['lancer'])
+		assert_equal('tggg',gene.snps_hap['landmark'])
+		assert_equal('tagg',gene.snps_hap['mace'])
+		assert_equal('ggtg',gene.snps_hap['norin61'])
+		assert_equal('ggtg',gene.snps_hap['paragon'])
+		assert_equal('tgga',gene.snps_hap['robigus'])
+		assert_equal('tggg',gene.snps_hap['stanley'])
+		assert_equal('tgga',gene.snps_hap['sy_mattis'])
+		assert_equal('tggg',gene.snps_hap['weebil'])
+
+		assert_equal(2821, gene.hap_position(0))
+		assert_equal(4030, gene.hap_position(1))
+		assert_equal(4403, gene.hap_position(2))
+		assert_equal(4773, gene.hap_position(3))
+
 	end
 
-	def test_contigous_blocks
-		gene = @sequences["TraesCS6A02G239100"]
-	end
+
 end
