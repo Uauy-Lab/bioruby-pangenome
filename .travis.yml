@@ -7,6 +7,8 @@ addons:
 before_install:
   - gem update --system
   - export RUBYOPT="-W1"
+before_script:
+  - mkdir -p $TRAVIS_BUILD_DIR/test/data/out
 rvm:
   - 2.3.8
   - 2.4.10
