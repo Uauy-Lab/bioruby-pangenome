@@ -5,7 +5,7 @@ source "https://rubygems.org"
 gem "bio"
 gem "bio-blastxmlparser"
 gem "bio-gff3"
-
+gem 'damerau-levenshtein'
 # Add dependencies to develop your gem here.
 # Include everything needed to run rake, tests, features, etc.
 group :development do
