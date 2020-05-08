@@ -8,7 +8,9 @@ gem "bio-gff3"
 gem 'damerau-levenshtein'
 # Add dependencies to develop your gem here.
 # Include everything needed to run rake, tests, features, etc.
+gem 'coveralls', require: false
 group :development do
+
   gem "shoulda", ">= 0"
   gem "rdoc", "~> 3.12"
   gem "simplecov", ">= 0"
