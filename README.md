@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/Uauy-Lab/bioruby-pangenome.svg?branch=master)](https://travis-ci.org/Uauy-Lab/bioruby-pangenome)
 
-[![Coverage Status](https://coveralls.io/repos/github/Uauy-Lab/bioruby-polyploid-tools/badge.svg?branch=master)](https://coveralls.io/github/Uauy-Lab/bioruby-polyploid-tools?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/Uauy-Lab/bioruby-pangenome/badge.svg?branch=master)](https://coveralls.io/github/Uauy-Lab/bioruby-pangenome?branch=master)
 
 Full description goes here
 
