@@ -1,6 +1,8 @@
 # bio-pangenome
 
-[![Build Status](https://secure.travis-ci.org/homonecloco/bioruby-pangenome.png)](http://travis-ci.org/homonecloco/bioruby-pangenome)
+[![Build Status](https://travis-ci.org/Uauy-Lab/bioruby-pangenome.svg?branch=master)](https://travis-ci.org/Uauy-Lab/bioruby-pangenome)
+
+[![Coverage Status](https://coveralls.io/repos/github/Uauy-Lab/bioruby-polyploid-tools/badge.svg?branch=master)](https://coveralls.io/github/Uauy-Lab/bioruby-polyploid-tools?branch=master)
 
 Full description goes here
 
