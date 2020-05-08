@@ -1,3 +1,4 @@
+require "damerau-levenshtein"
 module Bio::Pangenome
 	class GeneGroupSet < Hash 
 		attr_accessor :varieties
@@ -20,10 +21,28 @@ module Bio::Pangenome
 			end
 			hap.select{|h| not h.nil?  and h.size > 0}.join(sep)
 		end
- 
-		def cluster_haplotype(max_mismatches_per_kbp: 5)
-			
 
+		def haplotypes(max_mismatches_per_kbp: 5)
+			varieties.map{|v| haplotype(v) }
+		end
+ 
+		def haplotype_groups(max_mismatches_per_kbp: 5)
+			hap_mat = haplotypes(max_mismatches_per_kbp: max_mismatches_per_kbp)
+			relations = []
+			#puts hap_mat
+			varieties.each_with_index do |v1,i|
+				varieties.slice(0, i).each_with_index do |v2, j|
+					#puts "#{v1}:#{v2}"
+					#puts hap_mat[i]
+					#puts hap_mat[j]
+					dist = DamerauLevenshtein.distance(hap_mat[i], hap_mat[j])
+					#puts dist
+					relations << Bio::Relation.new(v1, v2, dist)
+				end
+			end
+			dist_mat = Bio::Pathway.new(relations, 'undirected')
+			puts dist_mat
+			dist_mat
 		end
 
 		def haplotype_matrix(max_mismatches_per_kbp: 5)
