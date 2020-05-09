@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 #
-# BioRuby bio-pangenome Plugin BioPangenome
+# BioRuby bio-pangenome Plugin Bio::Pangenome
 # Author:: Ricardo H Ramirez Gonzalez
 # Copyright:: 2019,2020
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 #
-# BioRuby bio-pangenome Plugin BioPangenome
+# BioRuby bio-pangenome Plugin Bio::Pangenome
 # Author:: Rciardo H. Ramirez Gonzalez
 # Copyright:: 2019, 2020
 
@@ -85,31 +85,31 @@ end
 
 opts.parse!(ARGV)
 
-genes = BioPangenome.load_genes(options[:genes], window: options[:window], no_windows: options[:no_windows] )
+genes = Bio::Pangenome.load_genes(options[:genes], window: options[:window], no_windows: options[:no_windows] )
 puts "Genes count: #{genes.size}"
 
-lines = BioPangenome.load_lines(options[:lines])
+lines = Bio::Pangenome.load_lines(options[:lines])
 
-projected_genes = BioPangenome.load_projected_genes options[:transcript_mapping], genes: genes
+projected_genes = Bio::Pangenome.load_projected_genes options[:transcript_mapping], genes: genes
 
 
 seqs = nil 
 
 if options[:distance].integer?
-  variety_coordinates = BioPangenome.load_mapping_hash(
+  variety_coordinates = Bio::Pangenome.load_mapping_hash(
     varieties:lines, 
     genes: projected_genes ,
     prefix: options[:basepath],
     distance: options[:distance]
     )
-  seqs = BioPangenome.load_sequences_from_hash(
+  seqs = Bio::Pangenome.load_sequences_from_hash(
     coordinates:variety_coordinates,
     prefix: options[:basepath],
     distance: options[:distance],
     projected_genes: projected_genes
     )
 else 
-  seqs = BioPangenome.load_cds_sequences( varieties: lines,
+  seqs = Bio::Pangenome.load_cds_sequences( varieties: lines,
     prefix: "#{options[:basepath]}/#{options[:distance]}/",
     suffix: ".#{options[:distance]}.fa.gz",
     set_id: options[:distance], 
@@ -123,7 +123,7 @@ output = output + "_" + options[:window].to_s if options[:no_windows] > 0
 
 Dir.mktmpdir do |temp_dir|
   puts "Aligning in  #{temp_dir}"
-  BioPangenome.align_gene_groups(
+  Bio::Pangenome.align_gene_groups(
     seqs: seqs, 
     distance:options[:distance],
     output: output,
