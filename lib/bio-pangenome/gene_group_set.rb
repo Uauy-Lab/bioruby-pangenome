@@ -3,6 +3,7 @@ module Bio::Pangenome
 	class GeneGroupSet < Hash 
 		attr_accessor :varieties
 		attr_accessor :genes 
+		attr_accessor :variety_haplotype
 		def complete
 			ret = GeneGroupSet.new { |h, k| h[k] = GeneGroup.new }
 			ret.varieties = varieties
@@ -12,6 +13,16 @@ module Bio::Pangenome
 			end 
 			ret.genes = genes.select {|g| ret.include? g}
 			return ret
+		end
+
+		def varieties_for
+			return @varieties_for if @varieties_for
+			@variety_haplotype.freeze
+			@varieties_for = Hash.new{|h,k| h[k] = []}
+			variety_haplotype.each_pair do |name, val| 
+				@varieties_for[val] << name 
+			end
+			return @varieties_for
 		end
 
 		def haplotype(variety, sep: "", max_mismatches_per_kbp: 5)
@@ -29,14 +40,9 @@ module Bio::Pangenome
 		def haplotype_groups(max_mismatches_per_kbp: 5)
 			hap_mat = haplotypes(max_mismatches_per_kbp: max_mismatches_per_kbp)
 			relations = []
-			#puts hap_mat
 			varieties.each_with_index do |v1,i|
 				varieties.slice(0, i).each_with_index do |v2, j|
-					#puts "#{v1}:#{v2}"
-					#puts hap_mat[i]
-					#puts hap_mat[j]
 					dist = DamerauLevenshtein.distance(hap_mat[i], hap_mat[j])
-					#puts dist
 					relations << Bio::Relation.new(v1, v2, dist)
 				end
 			end
@@ -82,6 +88,41 @@ module Bio::Pangenome
 				ret[base_gene].expected_varieties = varieties
 			end
 		end
+		ret
+	end
+
+	class GeneGroupSetHaplotypes 
+		attr_reader :varieties, :all_genes, :chunks, :chunk_no, :blocks
+		def initialize(chunks: 1, chunk_no: 0)
+			@varieties = Set.new 
+			@all_genes = Set.new
+			@chunks = chunks
+			@chunk_no = chunk_no
+			@blocks = Hash.new do|h,k| 
+				tmp = GeneGroupSet.new 
+				tmp.variety_haplotype = Hash.new  
+				tmp.genes     = []
+				tmp.varieties = Set.new
+				h[k]=tmp
+			end
+		end
+	end
+
+	def self.load_haplotye_groups(genes_file, haplotypes_file, chunk_no: 0, chunks: 1)
+		ret = GeneGroupSetHaplotypes.new(chunk_no: chunk_no, chunks: chunks)
+		CSV.foreach(haplotypes_file, col_sep:"\t", headers: true) do |row|
+			ret.varieties << row["line"]
+			ret.blocks[row["block"]].varieties << row["line"]
+			ret.blocks[row["block"]].variety_haplotype[row["line"]] = row["haplotype"]
+		end
+
+
+		
+		CSV.foreach(genes_file, col_sep:"\t", headers: true) do |row|
+			ret.all_genes << row["gene"]
+			ret.blocks[row["block"]].genes << row["gene"]
+		end
+		#puts ret.inspect
 		ret
 	end
 end
