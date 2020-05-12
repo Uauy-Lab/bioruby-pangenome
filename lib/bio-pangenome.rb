@@ -13,6 +13,7 @@ require 'bio-pangenome/gff3_extensions.rb'
 require	'bio-pangenome/MultipleGFF3.rb'
 require	'bio-pangenome/gene_group.rb'
 require	'bio-pangenome/gene_group_set.rb'
+require	'bio-pangenome/gene_group_set_haplotypes.rb'
 require	'bio-pangenome/mask.rb'
 
 

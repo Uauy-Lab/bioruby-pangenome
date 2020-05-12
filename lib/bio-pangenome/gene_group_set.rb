@@ -71,11 +71,7 @@ module Bio::Pangenome
 		varieties.each do |variety|
 			path = "#{prefix}/#{variety}#{suffix}"
 			Bio::Extensions.fasta_gz_iterator(path) do |entry|
-				definition, region = entry.definition.split("::")
-				seq_name = parseSequenceName(region, definition) if region
-				seq_name = GeneFlankingRegion.new(entry.definition, nil, "",
-					"", entry.definition, set_id, nil, variety ) unless region
-				arr = definition.split(".")
+				seq_name, definition, region, arr = parse_entry_name(entry)
 				next unless genes.include? seq_name.gene
 				row = genes[seq_name.gene]
 				row = genes[arr[0]] unless region
@@ -91,38 +87,5 @@ module Bio::Pangenome
 		ret
 	end
 
-	class GeneGroupSetHaplotypes 
-		attr_reader :varieties, :all_genes, :chunks, :chunk_no, :blocks
-		def initialize(chunks: 1, chunk_no: 0)
-			@varieties = Set.new 
-			@all_genes = Set.new
-			@chunks = chunks
-			@chunk_no = chunk_no
-			@blocks = Hash.new do|h,k| 
-				tmp = GeneGroupSet.new 
-				tmp.variety_haplotype = Hash.new  
-				tmp.genes     = []
-				tmp.varieties = Set.new
-				h[k]=tmp
-			end
-		end
-	end
-
-	def self.load_haplotye_groups(genes_file, haplotypes_file, chunk_no: 0, chunks: 1)
-		ret = GeneGroupSetHaplotypes.new(chunk_no: chunk_no, chunks: chunks)
-		CSV.foreach(haplotypes_file, col_sep:"\t", headers: true) do |row|
-			ret.varieties << row["line"]
-			ret.blocks[row["block"]].varieties << row["line"]
-			ret.blocks[row["block"]].variety_haplotype[row["line"]] = row["haplotype"]
-		end
-
-
-		
-		CSV.foreach(genes_file, col_sep:"\t", headers: true) do |row|
-			ret.all_genes << row["gene"]
-			ret.blocks[row["block"]].genes << row["gene"]
-		end
-		#puts ret.inspect
-		ret
-	end
+	
 end

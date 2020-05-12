@@ -15,24 +15,34 @@ class Test::GeneGroupSetHaplotypes < Test::Unit::TestCase
 		
 		#puts @sequences.keys
 		
-
+		@genes_file   = "./test/data/genes_reg.txt"
+		@lines_file   = "./test/data/lines_reg.txt"
+		@mapping_file = "./test/data/mapping_reg.csv.gz"
 	end
 
 	def teardown
 		## Nothing really
 	end
 
-	def test_load_haplotype_groups
-		all_haps = Bio::Pangenome.load_haplotye_groups("./test/data/genes_reg.txt", "./test/data/lines_reg.txt")
+	def test_load_gene_sequences
+		all_haps = Bio::Pangenome.load_haplotye_groups(@genes_file, @lines_file)
+		projected_genes =  Bio::Pangenome.load_projected_genes(@mapping_file, genes: all_haps.gene_order)
+		all_haps.load_sequences(
+		 	genes: projected_genes,  
+		 	prefix: "./test/data/reg/2000bp", 
+		 	suffix: "_2000bp_RefSeqv1.1.fa.gz", 
+		 	set_id: "2000bp")
+		#puts all_haps.blocks.first
+	end
 
+	def test_load_haplotype_groups
+		all_haps = Bio::Pangenome.load_haplotye_groups(@genes_file, @lines_file)
 		assert_equal(15, all_haps.varieties.size)
 		assert(all_haps.blocks.include? "G1" )
 		assert(all_haps.blocks.include? "G2" )
 		assert_equal(2, all_haps.blocks.size)
-
 		g1 = all_haps.blocks["G1"]
 		g2 = all_haps.blocks["G2"]
-
 		assert_equal("CS", g1.variety_haplotype["chinese"])
 		assert_equal("P1", g1.variety_haplotype["cadenza"])
 		assert_equal("P1", g1.variety_haplotype["paragon"])
@@ -48,7 +58,6 @@ class Test::GeneGroupSetHaplotypes < Test::Unit::TestCase
 		assert_equal("P5", g1.variety_haplotype["landmark"])
 		assert_equal("P6", g1.variety_haplotype["mace"])
 		assert_equal("P6", g1.variety_haplotype["stanley"])
-
 		assert(g1.varieties_for["CS"].include?  "chinese")
 		assert_equal(g1.varieties_for["P1"], ["cadenza", "paragon", "norin61", "lancer","claire", "jagger", "sy_mattis"])
 		assert_equal(g1.varieties_for["P2"], ["robigus","arinalrfor"])
@@ -58,7 +67,6 @@ class Test::GeneGroupSetHaplotypes < Test::Unit::TestCase
 		assert_equal(g1.varieties_for["P6"], ["mace", "stanley"])
 		assert_raise(FrozenError){ g1.variety_haplotype["chinese"] = "P7" }
 	 	assert_raise(FrozenError){ g1.variety_haplotype["P7"]      = "P7" }
-
 	 	assert_equal(["TraesCS6A02G182400",
 				"TraesCS6A02G182700",
 				"TraesCS6A02G185600",
@@ -82,13 +90,6 @@ class Test::GeneGroupSetHaplotypes < Test::Unit::TestCase
 				"TraesCS6A02G213500",
 				"TraesCS6A02G214600",
 				"TraesCS6A02G217200"], g2.genes)
-	end
-
-
-	def test_load_haplotypes_groups_chunks
-		b1 = Bio::Pangenome.load_haplotye_groups("./test/data/genes_reg.txt", "./test/data/lines_reg.txt", chunk_no: 0, chunks: 2)
-		b2 = Bio::Pangenome.load_haplotye_groups("./test/data/genes_reg.txt", "./test/data/lines_reg.txt", chunk_no: 1, chunks: 2) 
-
 		assert_equal(["TraesCS6A02G182400",
 				"TraesCS6A02G182700",
 				"TraesCS6A02G185600",
@@ -98,7 +99,35 @@ class Test::GeneGroupSetHaplotypes < Test::Unit::TestCase
 				"TraesCS6A02G194700",
 				"TraesCS6A02G196000",
 				"TraesCS6A02G197200",
-				"TraesCS6A02G198400"], b1.genes)
+				"TraesCS6A02G198400",
+				"TraesCS6A02G199300",
+			 	"TraesCS6A02G199800",
+				"TraesCS6A02G201400",
+				"TraesCS6A02G204800",
+				"TraesCS6A02G209000",
+				"TraesCS6A02G209200",
+				"TraesCS6A02G210700",
+				"TraesCS6A02G210900",
+				"TraesCS6A02G212300",
+				"TraesCS6A02G213500",
+				"TraesCS6A02G214600",
+				"TraesCS6A02G217200"], all_haps.groupset_for_gene.keys)
+	end
+
+
+	def test_load_haplotypes_groups_chunks
+		b1 = Bio::Pangenome.load_haplotye_groups(@genes_file, @lines_file, chunk_no: 0, chunks: 2)
+		b2 = Bio::Pangenome.load_haplotye_groups(@genes_file, @lines_file, chunk_no: 1, chunks: 2) 
+		assert_equal(["TraesCS6A02G182400",
+				"TraesCS6A02G182700",
+				"TraesCS6A02G185600",
+				"TraesCS6A02G189600",
+				"TraesCS6A02G194200",
+				"TraesCS6A02G194600",
+				"TraesCS6A02G194700",
+				"TraesCS6A02G196000",
+				"TraesCS6A02G197200",
+				"TraesCS6A02G198400"], b1.gene_order)
 
 		assert_equal(["TraesCS6A02G199300",
 			 	"TraesCS6A02G199800",
@@ -111,9 +140,9 @@ class Test::GeneGroupSetHaplotypes < Test::Unit::TestCase
 				"TraesCS6A02G212300",
 				"TraesCS6A02G213500",
 				"TraesCS6A02G214600",
-				"TraesCS6A02G217200"], b2.genes)
-
+				"TraesCS6A02G217200"], b2.gene_order)
 	end
+
 
 
 	# def test_aligned_sequences	
