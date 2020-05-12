@@ -10,8 +10,6 @@ before_install:
 before_script:
   - mkdir -p $TRAVIS_BUILD_DIR/test/data/out
 rvm:
-  - 2.3.8
-  - 2.4.10
   - 2.5.8
   - 2.6.6
   - 2.7.1
