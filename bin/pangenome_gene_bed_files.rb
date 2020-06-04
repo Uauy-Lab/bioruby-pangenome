@@ -36,7 +36,8 @@ options = {
     lines:     "lines.txt",
     distances: [0,1000,2000,5000],
     path: "./gff/",
-    is_gz: true
+    is_gz: true, 
+    gff_suffix: "gff.gz"
 }
 
 opts = OptionParser.new do |o|
@@ -51,6 +52,10 @@ opts = OptionParser.new do |o|
 
     o.on("-p", "--gff_path DIR", "The directory where the gff files are") do |arg|
         options[:path ] = arg
+    end
+
+    o.on("-s", "--gff-suffix gff.gz", "The extension of the gff.") do |arg|
+        options[:gff_suffix] = arg 
     end
 
     o.separator ""
@@ -70,7 +75,7 @@ puts lines
 
 
 
-gffs = MultipleGFFs.new(folder: options[:path], lines:lines, suffix:".gff.gz", 
+gffs = MultipleGFFs.new(folder: options[:path], lines:lines, suffix:  options[:gff_suffix], 
     is_gz:options[:is_gz] )
 
 distances.each do |d|
